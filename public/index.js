@@ -169,3 +169,80 @@ console.log(cars);
 console.log(rentals);
 console.log(actors);
 console.log(rentalModifications);
+
+function price_exo1(time_p, distance_p){
+  var p=time_p+distance_p;
+  return p ;
+}
+
+function price_exo2(time_p, distance_p, time){
+  if(time<=1) {
+  var p=time_p+distance_p;
+  }
+  else if(1<time<4){
+    var p= time_p*0.9+distance_p;
+  }
+  else if(4<=time<10){
+    var p=time_p*0.7+distance_p;
+  }
+  else{
+    var p = 0.5*time_p+distance_p;
+  }
+  return p;
+}
+
+function commission(prix){
+  var p = prix *70;
+  return p;
+}
+
+function insurance(prix){
+  var p = commission(prix)/2;
+  return p;
+}
+
+function roadside_assistance(time){
+  return time ; 
+}
+
+function drivy(prix){
+  var p = prix - commission(prix) -insurance(prix) - roadside_assistance(prix);
+  return prix ;
+}
+
+
+function price_exo4(time_p, distance_p, time,r){
+  
+  if(time<=1) {
+  var p=time_p+distance_p;
+  }
+  else if(1<time<4){
+    var p= time_p*0.9+distance_p;
+  }
+  else if(4<=time<10){
+    var p=time_p*0.7+distance_p;
+  }
+  else{
+    var p = 0.5*time_p+distance_p;
+  }
+  if(r=="true"){
+    p=p+4*time;
+    return p ;
+  }
+  else{
+    return p;
+  }
+}
+
+
+
+  
+
+
+
+    
+
+
+
+
+
