@@ -170,29 +170,90 @@ console.log(rentals);
 console.log(actors);
 console.log(rentalModifications);
 
-function price_exo1(time_p, distance_p){
-  var p=time_p+distance_p;
+
+//exo1
+function price_1(time_c, distance_c){
+  var p=time_c+distance_c;
   return p ;
 }
 
-function price_exo2(time_p, distance_p, time){
-  if(time<=1) {
-  var p=time_p+distance_p;
+function exo_1(){
+	for(var i = 0; i<rentals.length; i++ )
+	{
+		var time_c;
+		var distance_c;
+		var RD = new Date(rentals[i].returnDate);
+		var PUD = new Date(rentals[i].pickupDate);
+		var Diff = Math.abs(RD.getTime()-PUD.getTime());
+		var J = Math.ceil(Diff/(1000*3600*24))+1; // pour que si on la loue le matin et on la rende le soir la date ne soit pas égale à 0
+		for( var j = 0; j<cars.length; j++)
+		{
+			if( rentals[i].carId == cars[j].id) 
+			{
+				time_c = J*cars[j].pricePerDay;
+				distance_c = rentals[i].distance * cars[j].pricePerKm;
+			}
+		}
+		
+		rentals[i].price=price_1(time_c, distance_c);
+		
+	}
+	
+	
+}
+
+exo_1();
+
+
+
+function price_2(price_d, time){
+
+   var p=price_d;
+  
+  if(1<time && time<4){
+     p=price_d*0.9;
   }
-  else if(1<time<4){
-    var p= time_p*0.9+distance_p;
+  if(4<=time && time<10){
+     p=price_d*0.7;
   }
-  else if(4<=time<10){
-    var p=time_p*0.7+distance_p;
-  }
-  else{
-    var p = 0.5*time_p+distance_p;
+  if(time>=10)
+  {
+     p = price_d*0.5;
   }
   return p;
 }
 
+function exo_2(){
+	for(var i = 0; i<rentals.length; i++ )
+	{
+		var time_c;
+		var distance_c;
+		var RD = new Date(rentals[i].returnDate);
+		var PUD = new Date(rentals[i].pickupDate);
+		var Diff = Math.abs(RD.getTime()-PUD.getTime());
+		var J = Math.ceil(Diff/(1000*3600*24))+1; // pour que si on la loue le matin et on la rende le soir la date ne soit pas égale à 0
+		for( var j = 0; j<cars.length; j++)
+		{
+			if( rentals[i].carId == cars[j].id) 
+			{
+				var price_D =price_2(cars[j].pricePerDay,J);
+				time_c = J*price_D;
+				distance_c = rentals[i].distance * cars[j].pricePerKm;
+			}
+			
+		}
+		
+		rentals[i].price=price_1(time_c, distance_c);
+		
+	}
+}
+
+exo_2();
+
+
+
 function commission(prix){
-  var p = prix *70;
+  var p = prix *0.3;
   return p;
 }
 
@@ -205,34 +266,90 @@ function roadside_assistance(time){
   return time ; 
 }
 
-function drivy(prix){
-  var p = prix - commission(prix) -insurance(prix) - roadside_assistance(prix);
-  return prix ;
+function drivy(prix, time){
+  var p = commission(prix) -insurance(prix) - roadside_assistance(time);
+  return p ;
 }
 
 
-function price_exo4(time_p, distance_p, time,r){
-  
-  if(time<=1) {
-  var p=time_p+distance_p;
-  }
-  else if(1<time<4){
-    var p= time_p*0.9+distance_p;
-  }
-  else if(4<=time<10){
-    var p=time_p*0.7+distance_p;
-  }
-  else{
-    var p = 0.5*time_p+distance_p;
-  }
-  if(r=="true"){
-    p=p+4*time;
-    return p ;
-  }
-  else{
-    return p;
-  }
+function exo_3(){
+	for(var i = 0; i<rentals.length; i++ )
+	{
+		var RD = new Date(rentals[i].returnDate);
+		var PUD = new Date(rentals[i].pickupDate);
+		var Diff = Math.abs(RD.getTime()-PUD.getTime());
+		var J = Math.ceil(Diff/(1000*3600*24))+1;
+		rentals[i].commission.insurance = insurance(rentals[i].price);
+		rentals[i].commission.assistance = roadside_assistance(J);
+		rentals[i].commission.drivy = drivy(rentals[i].price, J);
+		
+	}
 }
+
+exo_3();
+
+function exo_4()
+{
+	for(var i =0; i<rentals.length; i++)
+	{
+		var RD = new Date(rentals[i].returnDate);
+		var PUD = new Date(rentals[i].pickupDate);
+		var Diff = Math.abs(RD.getTime()-PUD.getTime());
+		var J = Math.ceil(Diff/(1000*3600*24))+1;
+		if(rentals[i].options.deductibleReduction )
+		{
+			rentals[i].price = rentals[i].price+4*J;
+			rentals[i].commission.drivy = rentals[i].commission.drivy +4*J;
+		}
+	}
+			
+}
+
+exo_4();
+
+function exo_5(){
+	for(var i=0; i<actors.length ; i++)
+	{
+		for(var j=0; j<rentals.length; j++)
+		{
+			if( actors[i].rentalId == rentals[j].id)
+			{
+	
+				for( var k=0; k< actors[i].payment.length; k++)
+					
+				{
+					if(actors[i].payment[k].who== "driver")
+					{
+						actors[i].payment[k].amount=rentals[j].price;
+					}
+					
+					if(actors[i].payment[k].who=="owner")
+					{
+						actors[i].payment[k].amount=rentals[j].price- commission(rentals[j].price);
+					}
+					
+					if(actors[i].payment[k].who== "insurance")
+					{
+						actors[i].payment[k].amount=rentals[j].commission.insurance;
+					}
+					
+					if(actors[i].payment[k].who== "assistance")
+					{
+						actors[i].payment[k].amount=rentals[j].commission.assistance;
+					}
+					
+					if(actors[i].payment[k].who== "drivy")
+					{
+						actors[i].payment[k].amount=rentals[j].commission.drivy;
+					}
+				}
+				
+			}
+		}
+	}
+}
+
+exo_5();
 
 
 
